@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: sonar
+  name: sonar
+spec:
+  ports:
+    - port: 9000
+      targetPort: 9000
+      name: sonarport
+  selector:
+    name: sonar
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sonar
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: sonar
+  template:
+    metadata:
+      name: sonar
+      labels:
+        name: sonar
+    spec:
+      containers:
+        - image: sonarqube:lts
+          args:
+            - -Dsonar.web.context=/sonar/
+          name: sonar
+          env:
+            - name: SONAR_JDBC_PASSWORD
+              value: "password"
+            - name: SONAR_JDBC_URL
+              value: "jdbc:postgresql://db:5432/sonar"
+            - name: SONAR_JDBC_USERNAME
+              value: "sonar"
+          ports:
+            - containerPort: 9000
+              name: sonar
+          resources:
+            requests:
+              memory: "2Gi"  # Request 1 GiB of RAM
+            limits:
+              memory: "2.5Gi"
