@@ -39,8 +39,8 @@ spec:
               value: "jdbc:postgresql://db:5432/sonar"
             - name: SONAR_JDBC_USERNAME
               value: "sonar"
-            - name: SONAR_WEB_CONTEXT
-              value: /sonar/
+            # - name: SONAR_WEB_CONTEXT
+            #   value: /sonar/
           ports:
             - containerPort: 9000
               name: sonar
