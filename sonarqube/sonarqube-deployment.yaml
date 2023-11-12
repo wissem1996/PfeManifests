@@ -30,7 +30,7 @@ spec:
       containers:
         - image: sonarqube:lts
           args:
-            - -Dsonar.web.context=/sonar/
+            - -Dsonar.web.context=/sonarqube/
           name: sonar
           env:
             - name: SONAR_JDBC_PASSWORD
@@ -39,6 +39,8 @@ spec:
               value: "jdbc:postgresql://db:5432/sonar"
             - name: SONAR_JDBC_USERNAME
               value: "sonar"
+            - name: SONAR_WEB_CONTEXT
+              value: /sonarqube/
           ports:
             - containerPort: 9000
               name: sonar
