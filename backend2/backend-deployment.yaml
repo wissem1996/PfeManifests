@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+spec:
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  annotations:
+    vault.hashicorp.com/agent-inject: "true"
+    vault.hashicorp.com/role: "backend-role"
+    vault.hashicorp.com/agent-inject-secret-dbpasswd: "secret/backend#dbpasswd"
+    vault.hashicorp.com/agent-inject-secret-dbusername: "secret/backend#dbusername"
+    vault.hashicorp.com/agent-inject-secret-dbname: "secret/backend#dbname"
+    vault.hashicorp.com/agent-inject-secret-dbhost: "secret/backend#dbhost"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      serviceAccountName: vault-auth
+      containers:
+        - name: backend
+          image: wissemgh5/pfe_backend:e13fdba5b89399560756d872619c5f5f37ea2f5d
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: backend
+          env:
+            - name: DBPASSWD
+              valueFrom:
+                secretKeyRef:
+                  name: vault-secrets
+                  key: dbpasswd
+            - name: DBUSERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: vault-secrets
+                  key: dbusername
+            - name: DBNAME
+              valueFrom:
+                secretKeyRef:
+                  name: vault-secrets
+                  key: dbname
+            - name: DBHOST
+              valueFrom:
+                secretKeyRef:
+                  name: vault-secrets
+                  key: dbhost
+        resources:
+          requests:
+            memory: "256Mi"
+          limits:
+            memory: "1Gi"
