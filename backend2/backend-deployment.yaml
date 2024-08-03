@@ -31,7 +31,7 @@ spec:
       labels:
         app: backend
     spec:
-      serviceAccountName: vault-auth
+      serviceAccountName: vault
       containers:
         - name: backend
           image: wissemgh5/pfe_backend:e13fdba5b89399560756d872619c5f5f37ea2f5d
