@@ -14,6 +14,13 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend
+  annotations:
+    vault.hashicorp.com/agent-inject: "true"
+    vault.hashicorp.com/role: "backend-role"
+    vault.hashicorp.com/agent-inject-secret-dbpasswd: "secret/backend#dbpasswd"
+    vault.hashicorp.com/agent-inject-secret-dbusername: "secret/backend#dbusername"
+    vault.hashicorp.com/agent-inject-secret-dbname: "secret/backend#dbname"
+    vault.hashicorp.com/agent-inject-secret-dbhost: "secret/backend#dbhost"
 spec:
   replicas: 1
   selector:
@@ -24,6 +31,7 @@ spec:
       labels:
         app: backend
     spec:
+      serviceAccountName: vault-auth
       containers:
         - name: backend
           image: wissemgh5/pfe_backend:e13fdba5b89399560756d872619c5f5f37ea2f5d
@@ -31,18 +39,29 @@ spec:
           ports:
             - containerPort: 8080
               name: backend
-          env:  # Add environment variables here
+          env:
             - name: DBPASSWD
-              value: tutopwd
+              valueFrom:
+                secretKeyRef:
+                  name: vault-secrets
+                  key: dbpasswd
             - name: DBUSERNAME
-              value: tutorialsuser
+              valueFrom:
+                secretKeyRef:
+                  name: vault-secrets
+                  key: dbusername
             - name: DBNAME
-              value: tutorialsdb
+              valueFrom:
+                secretKeyRef:
+                  name: vault-secrets
+                  key: dbname
             - name: DBHOST
-              value: db
-          resources:
-            requests:
-              memory: "256Mi"  # Request 1 GiB of RAM
-            limits:
-              memory: "1Gi"
-    
+              valueFrom:
+                secretKeyRef:
+                  name: vault-secrets
+                  key: dbhost
+        resources:
+          requests:
+            memory: "256Mi"
+          limits:
+            memory: "1Gi"
