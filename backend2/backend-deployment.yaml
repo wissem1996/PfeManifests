@@ -60,8 +60,8 @@ spec:
                 secretKeyRef:
                   name: vault-secrets
                   key: dbhost
-        resources:
-          requests:
-            memory: "256Mi"
-          limits:
-            memory: "1Gi"
+          resources:
+            requests:
+              memory: "256Mi"
+            limits:
+              memory: "1Gi"
