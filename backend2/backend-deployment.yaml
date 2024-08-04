@@ -14,13 +14,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend
-  annotations:
-    vault.hashicorp.com/agent-inject: "true"
-    vault.hashicorp.com/role: "backend-role"
-    vault.hashicorp.com/agent-inject-secret-dbpasswd: "secret/backend#dbpasswd"
-    vault.hashicorp.com/agent-inject-secret-dbusername: "secret/backend#dbusername"
-    vault.hashicorp.com/agent-inject-secret-dbname: "secret/backend#dbname"
-    vault.hashicorp.com/agent-inject-secret-dbhost: "secret/backend#dbhost"
 spec:
   replicas: 1
   selector:
@@ -30,8 +23,15 @@ spec:
     metadata:
       labels:
         app: backend
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "backend-role"
+        vault.hashicorp.com/agent-inject-secret-dbpasswd: "secret/backend#dbpasswd"
+        vault.hashicorp.com/agent-inject-secret-dbusername: "secret/backend#dbusername"
+        vault.hashicorp.com/agent-inject-secret-dbname: "secret/backend#dbname"
+        vault.hashicorp.com/agent-inject-secret-dbhost: "secret/backend#dbhost"
     spec:
-      serviceAccountName: vault
+      serviceAccountName: vault-auth
       containers:
         - name: backend
           image: wissemgh5/pfe_backend:e13fdba5b89399560756d872619c5f5f37ea2f5d
@@ -41,25 +41,13 @@ spec:
               name: backend
           env:
             - name: DBPASSWD
-              valueFrom:
-                secretKeyRef:
-                  name: sh.helm.release.v1.vault.v1
-                  key: dbpasswd
+              value: "$(DBPASSWD)"
             - name: DBUSERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: sh.helm.release.v1.vault.v1
-                  key: dbusername
+              value: "$(DBUSERNAME)"
             - name: DBNAME
-              valueFrom:
-                secretKeyRef:
-                  name: sh.helm.release.v1.vault.v1
-                  key: dbname
+              value: "$(DBNAME)"
             - name: DBHOST
-              valueFrom:
-                secretKeyRef:
-                  name: sh.helm.release.v1.vault.v1
-                  key: dbhost
+              value: "$(DBHOST)"
           resources:
             requests:
               memory: "256Mi"
