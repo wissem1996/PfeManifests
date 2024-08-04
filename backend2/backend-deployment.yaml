@@ -43,22 +43,22 @@ spec:
             - name: DBPASSWD
               valueFrom:
                 secretKeyRef:
-                  name: vault-secrets
+                  name: sh.helm.release.v1.vault.v1
                   key: dbpasswd
             - name: DBUSERNAME
               valueFrom:
                 secretKeyRef:
-                  name: vault-secrets
+                  name: sh.helm.release.v1.vault.v1
                   key: dbusername
             - name: DBNAME
               valueFrom:
                 secretKeyRef:
-                  name: vault-secrets
+                  name: sh.helm.release.v1.vault.v1
                   key: dbname
             - name: DBHOST
               valueFrom:
                 secretKeyRef:
-                  name: vault-secrets
+                  name: sh.helm.release.v1.vault.v1
                   key: dbhost
           resources:
             requests:
